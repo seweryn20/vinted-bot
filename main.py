@@ -42,7 +42,7 @@ headers = {
 
 for fraza in frazy:
 
-    url = f"https://www.vinted.pl/catalog?search_text={fraza}"
+    url = f"https://www.vinted.pl/catalog?search_text={quote(fraza)}"
 
     response = requests.get(url, headers=headers)
 
