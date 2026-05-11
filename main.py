@@ -1,17 +1,66 @@
 import requests
 import os
+import time
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+frazy = [
+    "aaawaria",
+    "alcomindz",
+    "alcmdz",
+    "belmondo",
+    "belmondawg",
+    "poppyn",
+    "benito",
+    "diho",
+    "gmll",
+    "gm2l",
+    "don poldon",
+    "gicik amane",
+    "gsp",
+    "hewra",
+    "kaz bałagane",
+    "koldi",
+    "malik montana",
+    "mlody dron",
+    "mobbyn",
+    "og olgierd",
+    "olosolo",
+    "oyche doniz",
+    "ricci",
+    "rogal ddl",
+    "sentino",
+    "sicarios",
+    "tax free",
+    "tuzza"
+]
 
-response = requests.post(
-    url,
-    data={
-        "chat_id": CHAT_ID,
-        "text": "BOT DZIALA"
-    }
-)
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
 
-print(response.text)
+for fraza in frazy:
+
+    url = f"https://www.vinted.pl/catalog?search_text={fraza}"
+
+    response = requests.get(url, headers=headers)
+
+    text = f"""
+NOWA FRAZA SPRAWDZONA
+
+{fraza}
+
+LINK:
+{url}
+"""
+
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        data={
+            "chat_id": CHAT_ID,
+            "text": text
+        }
+    )
+
+    time.sleep(2)
