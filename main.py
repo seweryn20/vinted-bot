@@ -12,6 +12,7 @@ frazy = [
     "alcmdz",
     "belmondo",
     "belmondawg",
+    "hehe",
     "poppyn",
     "benito",
     "diho",
@@ -19,14 +20,18 @@ frazy = [
     "gm2l",
     "don poldon",
     "gicik amane",
+    "amen pacierzu",
     "gsp",
     "hewra",
     "kaz bałagane",
+    "narkopop",
     "koldi",
     "malik montana",
     "mlody dron",
     "mobbyn",
+    "uhqqow",
     "og olgierd",
+    "gooch gang",
     "olosolo",
     "oyche doniz",
     "ricci",
@@ -34,7 +39,8 @@ frazy = [
     "sentino",
     "sicarios",
     "tax free",
-    "tuzza"
+    "tuzza",
+    "tuzza globale"
 ]
 
 headers = {
@@ -45,10 +51,8 @@ for fraza in frazy:
 
     url = f"https://www.vinted.pl/catalog?search_text={quote(fraza)}"
 
-    response = requests.get(url, headers=headers)
-
     text = f"""
-NOWA FRAZA SPRAWDZONA
+NOWA FRAZA
 
 {fraza}
 
@@ -63,5 +67,3 @@ LINK:
             "text": text
         }
     )
-
-    time.sleep(2)
