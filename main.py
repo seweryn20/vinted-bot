@@ -1,9 +1,7 @@
 import requests
 import os
 import json
-import re
 from urllib.parse import quote
-from bs4 import BeautifulSoup
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -45,33 +43,6 @@ frazy = [
     "tuzza globale"
 ]
 
-ALLOWED_SIZES = ["M", "L", "XL"]
-
-TOP_KEYWORDS = [
-    "hoodie",
-    "bluza",
-    "t-shirt",
-    "tshirt",
-    "koszulka",
-    "crewneck",
-    "longsleeve",
-    "koszula",
-    "zip",
-    "sweatshirt"
-]
-
-BLOCKED_KEYWORDS = [
-    "spodnie",
-    "pants",
-    "jeans",
-    "buty",
-    "shoes",
-    "czapka",
-    "cap",
-    "torba",
-    "bag"
-]
-
 headers = {
     "User-Agent": "Mozilla/5.0"
 }
@@ -84,59 +55,84 @@ except:
 
 for fraza in frazy:
 
-    url = f"https://www.vinted.pl/catalog?search_text={quote(fraza)}"
+    url = f"https://www.vinted.pl/api/v2/catalog/items?search_text={quote(fraza)}"
 
     response = requests.get(url, headers=headers)
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        data = response.json()
+    except:
+        continue
 
-    links = soup.find_all("a", href=True)
+    items = data.get("items", [])
 
-    for link in links:
+    for item in items[:5]:
 
-        href = link["href"]
-
-        if "/items/" not in href:
-            continue
-
-        item_id_match = re.search(r'/items/(\d+)', href)
-
-        if not item_id_match:
-            continue
-
-        item_id = item_id_match.group(1)
+        item_id = str(item.get("id"))
 
         if item_id in seen:
             continue
 
-        text_content = link.get_text(" ", strip=True).lower()
+        title = item.get("title", "Brak tytułu")
+        price = item.get("price", "Brak ceny")
+        size = item.get("size_title", "Brak rozmiaru")
+        link = item.get("url", "")
 
-        if not any(word in text_content for word in TOP_KEYWORDS):
+        title_lower = title.lower()
+
+        top_keywords = [
+            "hoodie",
+            "bluza",
+            "t-shirt",
+            "tshirt",
+            "koszulka",
+            "crewneck",
+            "longsleeve",
+            "koszula",
+            "zip",
+            "sweatshirt"
+        ]
+
+        blocked_keywords = [
+            "spodnie",
+            "pants",
+            "jeans",
+            "buty",
+            "shoes",
+            "czapka",
+            "cap",
+            "torba",
+            "bag"
+        ]
+
+        allowed_sizes = ["M", "L", "XL"]
+
+        if not any(word in title_lower for word in top_keywords):
             continue
 
-        if any(word in text_content for word in BLOCKED_KEYWORDS):
+        if any(word in title_lower for word in blocked_keywords):
             continue
 
-        size_ok = any(size.lower() in text_content for size in ["m", "l", "xl"])
-
-        if not size_ok:
+        if size not in allowed_sizes:
             continue
 
-        full_link = f"https://www.vinted.pl{href}"
-
-        message = f"""
+        text = f"""
 NOWA OFERTA
 
 FRAZA: {fraza}
 
-{full_link}
+{title}
+Rozmiar: {size}
+Cena: {price}
+
+{link}
 """
 
         requests.post(
             f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
             data={
                 "chat_id": CHAT_ID,
-                "text": message
+                "text": text
             }
         )
 
