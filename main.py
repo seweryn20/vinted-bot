@@ -75,8 +75,9 @@ for fraza in frazy:
 
         title = item.get("title", "Brak tytułu")
         price = item.get("price", "Brak ceny")
-        size = item.get("size_title", "Brak rozmiaru")
-        link = item.get("url", "")
+
+        item_id_for_link = item.get("id")
+        link = f"https://www.vinted.pl/items/{item_id_for_link}"
 
         title_lower = title.lower()
 
@@ -105,15 +106,10 @@ for fraza in frazy:
             "bag"
         ]
 
-        allowed_sizes = ["M", "L", "XL"]
-
         if not any(word in title_lower for word in top_keywords):
             continue
 
         if any(word in title_lower for word in blocked_keywords):
-            continue
-
-        if size not in allowed_sizes:
             continue
 
         text = f"""
@@ -122,7 +118,6 @@ NOWA OFERTA
 FRAZA: {fraza}
 
 {title}
-Rozmiar: {size}
 Cena: {price}
 
 {link}
