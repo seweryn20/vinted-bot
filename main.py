@@ -1,6 +1,7 @@
 import requests
 import os
-import time
+import json
+from urllib.parse import quote
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
